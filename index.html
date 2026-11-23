@@ -184,6 +184,8 @@ tbody tr:hover td{background:rgba(255,255,255,0.022);}
 .badge-paidwait{background:rgba(20,184,166,0.12);color:#5eead4;border:1px solid rgba(20,184,166,0.25);}.badge-paidwait::before{background:#14b8a6;}
 .cc-teal .cat-name{color:#2dd4bf;}.cc-teal .cat-num{color:#2dd4bf;}.cc-teal .cat-bar-fill,.cc-teal::after{background:#14b8a6;}
 /* Negative / Bad — darkest red, strongest signal */
+.badge-hindi{background:rgba(234,179,8,0.12);color:#fde047;border:1px solid rgba(234,179,8,0.28);}.badge-hindi::before{background:#eab308;}
+.cc-yellow .cat-name{color:#facc15;}.cc-yellow .cat-num{color:#facc15;}.cc-yellow .cat-bar-fill,.cc-yellow::after{background:#eab308;}
 .badge-negative{background:rgba(220,38,38,0.16);color:#fca5a5;border:1px solid rgba(220,38,38,0.4);}.badge-negative::before{background:#dc2626;}
 .cc-slate .cat-name{color:#f87171;}.cc-slate .cat-num{color:#f87171;}.cc-slate .cat-bar-fill,.cc-slate::after{background:#dc2626;}
 
@@ -281,7 +283,7 @@ tbody tr:hover td{background:rgba(255,255,255,0.022);}
   </div>
   <div class="header-right">
     <div class="hdr-status"><span class="status-dot"></span><span id="hdrStatus">Ready</span></div>
-    <div class="hdr-pill">v3.2</div>
+    <div class="hdr-pill">v3.4</div>
   </div>
 </header>
 
@@ -373,7 +375,7 @@ tbody tr:hover td{background:rgba(255,255,255,0.022);}
   </div>
   <div class="info-box">
     <span class="info-icon">💡</span>
-    <div class="info-text"><strong>Supported formats:</strong> <code>HH:MM:SS From [Name] to [Destination]:</code> or <code>YYYY-MM-DD HH:MM:SS From [Name] to [Destination]:</code> on one line, message on the next (tab-indented). Both classic and new Zoom Save Chat exports work. Spam windows, certificate timing and "Too Fast" de-duplication are evaluated per file.<br><br><strong>Attendee matching:</strong> each savechat is paired with the attendee report whose names overlap most. Chat names are matched to <code>User Name (Original Name)</code>; when several attendees share a name, the one who was in the session at the message time is chosen. Phone numbers are reduced to the last 10 digits (country code dropped). First join, last leave and total time in session come from the report&#39;s join/leave rows — overlapping rejoins are merged and the total is capped at the webinar&#39;s actual running time. Anything that cannot be matched gets <code>#NA</code>.</div>
+    <div class="info-text"><strong>Supported formats:</strong> <code>HH:MM:SS From [Name] to [Destination]:</code> or <code>YYYY-MM-DD HH:MM:SS From [Name] to [Destination]:</code> on one line, message on the next (tab-indented). Both classic and new Zoom Save Chat exports work. The Time column carries the date: from the chat line when the export has one, otherwise from the paired attendee report. Spam windows, certificate timing and "Too Fast" de-duplication are evaluated per file.<br><br><strong>Attendee matching:</strong> each savechat is paired with the attendee report whose names overlap most. Chat names are matched to <code>User Name (Original Name)</code>; when several attendees share a name, the one who was in the session at the message time is chosen. Phone numbers are reduced to the last 10 digits (country code dropped). First join, last leave and total time in session come from the report&#39;s join/leave rows — overlapping rejoins are merged and the total is capped at the webinar&#39;s actual running time. Anything that cannot be matched gets <code>#NA</code>.</div>
   </div>
 </div>
 
@@ -807,6 +809,67 @@ let CATEGORIES=[
      /\b(will|can|could)\s+(you|we|i)\s+promot/i
    ]},
 
+  // ─── Hindi Session Request ────────────────────────────────────────────────
+  // Attendees asking for the session / explanation / programme in Hindi or Hinglish,
+  // including "English samajh nahi aata". Questions about whether an AI TOOL works
+  // in Hindi (notes, voice, translation, generating content) are excluded unless the
+  // message is clearly about the class / speaker. People asking for English or saying
+  // "no hindi" are never flagged. Keywords and patterns were mined from real chats.
+  {id:'hindi',name:'Hindi Session Request',badge:'badge-hindi',ccls:'cc-yellow',
+   desc:'asked for the session / explanation / programme in Hindi or Hinglish · "English samajh nahi aata" · Hindi batch / Hindi version',
+   keywords:[
+     // ══ the language itself, incl. common misspellings & Hinglish ══
+     'hindi','hindhi','hindii','hindie','hindy','hinglish','hindlish','hindilish','hindish','hinglis','hingliah','hinglih','hinglsh','hingish','hinlish','hinglishh','hindi english','english hindi','hindi and english','english and hindi','hindi or english','english or hindi','hindi ya english',
+     'mix english','mixed language','mix language','both language','both languages','dono language','dono bhasha',
+     // ══ concatenated / typo forms (word-boundary matcher needs them as whole words) ══
+     'hindime','hindimai','hindimein','hindimain','hindim','hindibol','hindibolo','hindiboliye','hindimebolo','hindimebol','hindimebataye','hindimebatao','hindime bolo','hindime bol',
+     // ══ asking about the session's language ══
+     'webinar language','session language','class language','language of the webinar','language of the session','language of webinar','language of session','language of class','language of this session','language of this class','which language is this','what language is this','session is in which language','class is in which language',
+     // ══ Devanagari ══
+     'हिंदी','हिन्दी','हिंदी में','हिन्दी में','हिंदी मे','हिन्दी मे','हिंदी भाषा','हिन्दी भाषा','हिंदी बोलो','हिंदी बोलिए','हिंदी में बोलो','हिंदी में बोलिए','हिंदी में बताओ','हिंदी में बताइए','हिंदी में समझाओ','हिंदी में समझाइए',
+     // ══ "I don't understand English" (explicit forms; flexible spellings handled by patterns) ══
+     'english nahi aati','english nhi aati','english nahi aata','english nhi aata','english nahi ati','english nhi ati','english samajh nahi','english samaj nahi','english samjh nahi','english smjh nahi','english samajh nhi','english samaj nhi','english samjh nhi','english smjh nhi','english nahi samajh','english nahi samaj','english nahi samjh','english nhi samajh','english nhi samaj','english nhi samjh','english nahi samjhta','english nahi samajhta','english nahi samajta','english nahi samajhti','english nahi samajti',
+     'english me nahi','english mein nahi','english mai nahi','english me nhi','english mein nhi','english mai nhi','english me dikkat','english me problem','english mein problem','english mein dikkat','english problem','english weak','weak in english','weak english','english samajhne me','english samajhne mein','english samjhne me','english samjhne mein',
+     'angrezi','angreji','angrez','angraj','angrej','angrezo','angrejo','koi angraj','koi angrez','koi angrej'
+   ],
+   // Shape-based catches that a fixed keyword list can't express
+   patterns:[
+     /\bhingl\w*\b|\bhind[il]i?l\w*\b/i,                                                          // hinglish / hingliah / hindlish / hindilish typos
+     /\bhindi\s?(me|mein|mai|main|m|mei|may|mn|ma)\b/i,                                   // hindi me / mein / mai / m / hindime
+     /\bhindi\s?(bol\w*|bat\w*|btao|samj\w*|samaj\w*|smjh\w*|smjao|sikha\w*|padha\w*|karo|kijiye|kardo|kar do|rakh\w*)\b/i, // hindi bolo / bataiye / samjhao / sikhao
+     /\b(bol|bolo|boliye|bolie|bolna|bole|bolne|bata|batao|bataiye|btao|samjha|samjhao|samjhaiye|samajhao|smjhao|sikhao|padhao)\w*\s+(na\s+|to\s+|zara\s+|thoda\s+|thora\s+)?hindi\b/i, // bolo hindi / samjhao hindi
+     /\b(in|into|use|some|little|thoda|thora|bit of|bit|more|only|pure|full|fully|completely|totally|prefer|preferred|preferably|want|wants|need|needs|please|plz|pls|kindly|speak|talk|teach|tell|explain|say|repeat|translate|switch to|change to|go with|continue in|continue with|conduct in|session in|class in|webinar in|training in|lecture in|program in|batch in|course in|version in|also in|also)\s+(the\s+|a\s+|some\s+|little\s+|thoda\s+|thora\s+|bit\s+)?(hindi|hinglish|hindhi)\b/i,
+     /\b(hindi|hinglish|hindhi)\s+(please|plz|pls|plse|plese|pleasee|pleaseee|sir|mam|ma'?am|bhai|bro|bhaiya|bhaiyya|dada|sirji|ji|hi|bhi|v|bhee|also|aswell|as well|only|version|batch|class|classes|session|sessions|webinar|training|lecture|course|program\w*|progrem|medium|wale|wali|wala|me|main)\b/i,
+     /\b(english|angrezi|angreji|inglish)\s+(nahi|nhi|nai|ni|na|nahin|nahe)\s+(aati|aata|ati|ata|aa\w*|aarh\w*|arh\w*|samaj\w*|samjh\w*|smjh\w*|samajh\w*|samjha\w*|aa rah\w*|aa rh\w*|pata|pta)\b/i, // english nahi aati / samajh
+     /\b(english|angrezi|angreji|inglish)\s+(samaj\w*|samjh\w*|smjh\w*|samajh\w*|samjha\w*)\s+(nahi|nhi|nai|ni|na|nahin|nahe|me|mein|mai)\b/i,                                      // english samajh nahi / smjh nhi
+     /\b(english|angrezi|angreji|inglish)\s+(me|mein|mai|main|m)\s+(samajh|samaj|samjh|smjh)\w*\s+(nahi|nhi|nai|ni|na)\b/i,                                                  // english me samajh nahi
+     /\b(nahi|nhi|nai|ni)\s+(samajh|samaj|samjh|smjh)\w*\s+(english|angrezi|angreji)\b/i,
+     /\b(samajh|samaj|samjh|smjh)\w*\s+(nahi|nhi|nai|ni)\s+(aa|a)\w*\b[^.?!\n]{0,25}\b(english|angrezi|angreji)\b/i,
+     /\b(english|angrezi|angreji)\b[^.?!\n]{0,25}\b(samajh|samaj|samjh|smjh)\w*\s+(nahi|nhi|nai|ni)\s+(aa|a)\w*\b/i,
+     /\b(i|we|me|mujhe|mujhko|humko|hame|hamein|mera|meri|hamara|hamari)\s+(don'?t|dont|do not|cant|can'?t|cannot|not)\s+(know|understand|follow|get)\s+(much\s+|proper\s+|good\s+)?english\b/i,
+     /\b(my|mera|meri)\s+english\s+(is\s+)?(not\s+good|weak|poor|bad|kamjor|kamzor|thodi|thoda|kam|zero)\b/i,
+     /\bhindi\s+(me|mein|mai|main|m)\s+(nahi|nhi|nai|ni)\s+(hai|h|hoga|hogi|ho|hona|chalega)\b/i              // "hindi me nahi hai kya ye meeting?" — asking why it is not in Hindi
+   ],
+   // Questions about an AI TOOL handling Hindi (not the class) → dropped unless clearly about the session / speaker
+   excl:[
+     /\b(tool|tools|works?|working|worked|create|creates|creating|generate|generates|generating|make|makes|making|made|build|note|notes|transcri\w*|translat\w*|dubbed|dubbing|subtitle\w*|caption\w*|voice|voices|audio|text|typing|type|typed|prompt|prompts|output|outputs|support|supports|supported|compatible|detect\w*|recognise|recognize|convert\w*|chatgpt|chat gpt|gpt|claude|gemini|wispr|whisper|notebooklm|notebook lm|heygen|elevenlabs|eleven labs|canva|n8n|ai|app|apps|software|model|models|feature|features|input|inputs|keyboard|font|fonts|typing|accent|clone|cloning|avatar|bot|chatbot|automation)\b/i,
+     // asking for ENGLISH / rejecting Hindi — never a Hindi request
+     /\b(no|not|dont|don'?t|do not|stop|avoid|without|never|remove|less)\s+(the\s+|so much\s+|more\s+|much\s+|any\s+)?(hindi|hinglish)\b/i,
+     /\bhindi\s+(nahi|nhi|nai|ni|mat|na)\s+(bol\w*|aati|aata|ati|ata|chahiye|chaiye|samajh\w*|samaj\w*|samjh\w*|karo|kijiye|karna|karein|please|plz|pls)\b/i,
+     /\b(english|inglish)\s+(me|mein|mai|main|m)\s+(bol\w*|bat\w*|samjha\w*|samajha\w*|rakh\w*|karo|kijiye|rakho|rakhiye|continue|chalao|padhao|sikhao)\b/i,
+     /\b(please|plz|pls|kindly|only|prefer|preferably|use|speak|talk|teach|explain|continue|keep|switch to|change to|in|go with)\s+(the\s+|pure\s+|full\s+|only\s+)?english\s*(please|plz|pls|only|sir|mam|bhai|bro|hi)?\b(?![^.?!\n]{0,30}\b(nahi|nhi|nai|samajh|samaj|samjh|smjh|aati|aata)\b)/i,
+     /\b(i|we)\s+(don'?t|dont|do not|cant|can'?t|cannot)\s+(know|understand|speak|follow)\s+(much\s+)?hindi\b/i,
+     /\bnon[- ]?hindi\b/i,
+     /\bhindi\s+(song|songs|music|gaana|gana|gaane|gane|movie|movies|film|films|serial|serials|news|bgm)\b/i,
+     /\b(south|non hindi|tamil|telugu|kannada|malayalam)\s+(speaking|speaker|speakers|belt|people|person|audience|guys|students|folks)\b[^.?!\n]{0,30}\bhindi\b/i
+   ],
+   // …unless the message is plainly about the class / speaker / programme
+   exclBypass:[
+     /\b(speak|speaks|speaking|talk|talking|tell|telling|explain|explaining|explanation|teach|teaching|taught|repeat|samjha\w*|samajha\w*|smjha\w*|bol\w*|boli\w*|bata\w*|btao|baat|baath|lecture|lectures|class|classes|session|sessions|webinar|webinars|training|trainings|course|courses|batch|batches|program|programme|programs|progrem|inner circle|available|avilable|avaliable|availble|teacher|trainer|speaker|host|presenter|mentor|sir ji|sirji)\b/i,
+     /\d+\s*%\s*(english|hindi|hinglish)\b/i,                                   // "80% english 20% hindi"
+     /\b(english|hindi)\s+(and|&|or|\+|aur|ya|plus|with)\s+(hindi|english)\b/i    // "english and hindi" mixing
+   ]},
+
   // ─── Negative / Bad ─────────────────────────────────────────────────────────
   // Frustration, abuse / gaali / slang (any language), fraud-scam accusations,
   // dismissive & dissatisfied remarks, being-ignored complaints, overpriced complaints.
@@ -1033,17 +1096,19 @@ function parseZoomChat(text){
   //   "HH:MM:SS From Name to Destination:"              (classic)
   //   "YYYY-MM-DD HH:MM:SS From Name to Destination:"   (new export format)
   //   "DD/MM/YYYY HH:MM:SS From ..." / "DD-MM-YYYY ..." (defensive)
-  const hr=/^(?:\d{4}-\d{2}-\d{2}\s+|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+)?(\d{1,2}:\d{2}:\d{2})\s+[Ff]rom\s+(.+?)\s+[Tt]o\s+(.+?):\s*$/;
+  const hr=/^(?:(\d{4}-\d{2}-\d{2})\s+|(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s+)?(\d{1,2}:\d{2}:\d{2})\s+[Ff]rom\s+(.+?)\s+[Tt]o\s+(.+?):\s*$/;
+  // Date prefix → ISO yyyy-mm-dd. A d/m/y prefix is read as day-first unless the first number cannot be a day.
+  const isoDate=m=>{if(m[1])return m[1];if(!m[2])return null;let a=+m[2],b=+m[3],y=+m[4];if(y<100)y+=2000;let d=a,mo=b;if(a<=12&&b>12){mo=a;d=b;}return `${y}-${pad2(mo)}-${pad2(d)}`;};
   let cur=null;
   for(let i=0;i<lines.length;i++){
     const t=lines[i].trim();
     const hm=t.match(hr);
     if(hm){
-      if(cur&&cur.m.length) rows.push({time:cur.time,admin:cur.admin,replyTo:cur.replyTo,chat:cur.m.join(' ').trim()});
-      cur={time:hm[1],admin:hm[2].trim(),replyTo:hm[3].trim(),m:[]};
+      if(cur&&cur.m.length) rows.push({date:cur.date,time:cur.time,admin:cur.admin,replyTo:cur.replyTo,chat:cur.m.join(' ').trim()});
+      cur={date:isoDate(hm),time:hm[5],admin:hm[6].trim(),replyTo:hm[7].trim(),m:[]};
     } else if(cur&&t.length>0) cur.m.push(t);
   }
-  if(cur&&cur.m.length) rows.push({time:cur.time,admin:cur.admin,replyTo:cur.replyTo,chat:cur.m.join(' ').trim()});
+  if(cur&&cur.m.length) rows.push({date:cur.date,time:cur.time,admin:cur.admin,replyTo:cur.replyTo,chat:cur.m.join(' ').trim()});
   return rows;
 }
 
@@ -1291,7 +1356,7 @@ function readFiles(fileList){
   setStatus('Reading '+files.length+' file'+(files.length>1?'s':'')+'…');
   Promise.all(files.map(f=>new Promise(res=>{
     const r=new FileReader();
-    r.onload=ev=>res({name:f.name,text:ev.target.result});
+    r.onload=ev=>res({name:f.name,text:ev.target.result,lastModified:f.lastModified});
     r.onerror=()=>res({name:f.name,text:''});
     r.readAsText(f,'UTF-8');
   }))).then(processFiles);
@@ -1320,7 +1385,10 @@ function processFiles(items){
       const parsed=parseZoomChat(text);
       if(!parsed.length){bad.push(name);stats.push({file:name,rows:0,bad:true});continue;}
       for(const r of parsed){r.file=name;rows.push(r);}
-      stats.push({file:name,rows:parsed.length});
+      const fromChat=parsed.filter(r=>r.date).length;
+      let fileDate=null;
+      if(it.lastModified){const d=new Date(it.lastModified);fileDate=`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;}
+      stats.push({file:name,rows:parsed.length,dateInChat:fromChat===parsed.length,fileDate});
     }
     if(!rows.length){
       setStatus('Ready');
@@ -1354,7 +1422,8 @@ function runAnalysis(){
   spamChats=sp;
   allIssues=detectIssues(cleanChats); // issues only from non-spam attendee messages
   attachContacts();                   // phone / email from the paired attendee report (issues share the row objects' idx)
-  for(const it of allIssues){const r=allChats[it.idx];it.phone=r.phone;it.email=r.email;it.firstJoin=r.firstJoin;it.lastLeave=r.lastLeave;it.inSession=r.inSession;}
+  attachDates();                      // date for the Time column: chat line → paired report → file timestamp
+  for(const it of allIssues){const r=allChats[it.idx];it.date=r.date;it.phone=r.phone;it.email=r.email;it.firstJoin=r.firstJoin;it.lastLeave=r.lastLeave;it.inSession=r.inSession;}
   updateNavCounts();updateStats();populateIssueFilter();populateFileFilter();renderFileStrip();renderReportStrip();buildCatGrid();renderIssueTable();
   setStatus(fileStats.filter(f=>!f.bad).length+' files · '+allChats.length.toLocaleString()+' messages · '+allIssues.length.toLocaleString()+' issues');
 }
@@ -1556,6 +1625,32 @@ function attachContacts(){
 }
 let matchStats={matched:0,total:0};
 
+// Date for each message. Priority: the chat line's own date (new Zoom format) → the paired attendee
+// report's "Actual Start Time" date → the savechat file's modified date (shown as "verify" in the UI).
+function fmtDate(t){if(t===null||t===undefined)return null;const d=new Date(t*1000);return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth()+1)}-${pad2(d.getUTCDate())}`;}
+function attachDates(){
+  const byFile={};
+  for(const f of fileStats){
+    if(f.bad) continue;
+    const ri=chatReport[f.file];
+    const repDate=(ri!==undefined&&ri>=0&&reports[ri].window)?fmtDate(reports[ri].window.start):null;
+    let src,date=null;
+    if(f.dateInChat){src='chat';}
+    else if(repDate){src='report';date=repDate;}
+    else if(f.fileDate){src='file';date=f.fileDate;}
+    else{src='none';}
+    f.dateSource=src;f.date=date;
+    byFile[f.file]={src,date};
+  }
+  for(const r of allChats){
+    const d=byFile[r.file];
+    if(r.date) continue;                 // came from the chat line itself
+    r.date=d&&d.date?d.date:null;
+  }
+}
+// Time column value for export: "yyyy-mm-dd HH:MM:SS", or just the time when no date source exists
+const fullTime=r=>r.date?r.date+' '+r.time:r.time;
+
 // ═══════════════════════════════════════════
 //  RENDERING
 // ═══════════════════════════════════════════
@@ -1572,7 +1667,7 @@ function renderFileStrip(){
   const cur=document.getElementById('fileFilter')?.value||'all';
   const good=fileStats.filter(f=>!f.bad);
   document.getElementById('tag-files').textContent=good.length+' file'+(good.length!==1?'s':'');
-  el.innerHTML=good.map(f=>`<div class="file-chip${cur===f.file?' active':''}" onclick="filterByFile(${JSON.stringify(f.file).replace(/"/g,'&quot;')})" title="${esc(f.file)}"><span class="file-chip-name">${esc(f.file)}</span><span class="file-chip-num">${f.rows.toLocaleString()} msgs · <b>${issByFile[f.file]||0}</b> issues</span>${f.pairedWith?`<span class="file-chip-pair" title="Paired attendee report">⇄ ${esc(f.pairedWith)} (${Math.round(f.pairOverlap*100)}%)</span>`:(reports.length?'<span class="file-chip-pair">no report matched</span>':'')}</div>`).join('');
+  el.innerHTML=good.map(f=>`<div class="file-chip${cur===f.file?' active':''}" onclick="filterByFile(${JSON.stringify(f.file).replace(/"/g,'&quot;')})" title="${esc(f.file)}"><span class="file-chip-name">${esc(f.file)}</span><span class="file-chip-num">${f.rows.toLocaleString()} msgs · <b>${issByFile[f.file]||0}</b> issues</span>${f.pairedWith?`<span class="file-chip-pair" title="Paired attendee report">⇄ ${esc(f.pairedWith)} (${Math.round(f.pairOverlap*100)}%)</span>`:(reports.length?'<span class="file-chip-pair">no report matched</span>':'')}<span class="file-chip-pair" title="Date used in the Time column">📅 ${f.dateSource==='chat'?'from chat lines':f.dateSource==='report'?esc(f.date)+' (from report)':f.dateSource==='file'?esc(f.date)+' (file timestamp — verify)':'no date found'}</span></div>`).join('');
 }
 function renderReportStrip(){
   const el=document.getElementById('reportStrip');if(!el)return;
@@ -1602,7 +1697,7 @@ function renderIssueTable(){
   const included=allIssues.filter(r=>r.include).length;
   document.getElementById('tag-issues').textContent=included+' issues included';
   document.getElementById('tag-issues-count').textContent=tot+' showing';
-  document.getElementById('issueTbody').innerHTML=!fil.length?`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-txt">No issues found</div><div class="empty-sub2">Try changing the filter or search term</div></div></td></tr>`:sl.map(r=>{const gi=allIssues.indexOf(r);const c=avatarColor(r.admin);return`<tr><td class="td-file" title="${esc(r.file)}">${esc(r.file)}</td><td class="td-time">${esc(r.time)}</td><td class="td-name"><span class="avatar" style="background:${c}22;color:${c}">${initials(r.admin)}</span>${esc(r.admin)}</td><td class="td-contact${r.phone===NA?' na':''}" title="${esc(r.phone)}">${esc(r.phone)}</td><td class="td-contact${r.email===NA?' na':''}" title="${esc(r.email)}">${esc(r.email)}</td><td class="td-contact${r.firstJoin===NA?' na':''}" title="${esc(r.firstJoin)} → ${esc(r.lastLeave)}">${r.firstJoin===NA?NA:esc(r.firstJoin.slice(11,16))+' → '+esc(r.lastLeave.slice(11,16))+' · '+esc(r.inSession)+'m'}</td><td class="td-to">${esc(r.replyTo)}</td><td class="td-chat">${esc(r.chat)}</td><td><span class="badge ${r.badge}">${esc(r.catName)}</span></td><td><div class="toggle-wrap" onclick="toggleIssue(${gi})"><div class="toggle ${r.include?'on':''}"></div></div></td></tr>`;}).join('');
+  document.getElementById('issueTbody').innerHTML=!fil.length?`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-txt">No issues found</div><div class="empty-sub2">Try changing the filter or search term</div></div></td></tr>`:sl.map(r=>{const gi=allIssues.indexOf(r);const c=avatarColor(r.admin);return`<tr><td class="td-file" title="${esc(r.file)}">${esc(r.file)}</td><td class="td-time" title="${esc(fullTime(r))}">${esc(r.time)}</td><td class="td-name"><span class="avatar" style="background:${c}22;color:${c}">${initials(r.admin)}</span>${esc(r.admin)}</td><td class="td-contact${r.phone===NA?' na':''}" title="${esc(r.phone)}">${esc(r.phone)}</td><td class="td-contact${r.email===NA?' na':''}" title="${esc(r.email)}">${esc(r.email)}</td><td class="td-contact${r.firstJoin===NA?' na':''}" title="${esc(r.firstJoin)} → ${esc(r.lastLeave)}">${r.firstJoin===NA?NA:esc(r.firstJoin.slice(11,16))+' → '+esc(r.lastLeave.slice(11,16))+' · '+esc(r.inSession)+'m'}</td><td class="td-to">${esc(r.replyTo)}</td><td class="td-chat">${esc(r.chat)}</td><td><span class="badge ${r.badge}">${esc(r.catName)}</span></td><td><div class="toggle-wrap" onclick="toggleIssue(${gi})"><div class="toggle ${r.include?'on':''}"></div></div></td></tr>`;}).join('');
   document.getElementById('issuePageInfo').textContent=`${Math.min((issuePage-1)*PAGE+1,Math.max(1,tot))}–${Math.min(issuePage*PAGE,tot)} of ${tot.toLocaleString()}`;
   buildCatGrid();renderFileStrip();
 }
@@ -1669,7 +1764,7 @@ function buildExportRows(){
   const out=new Array(allChats.length+1);out[0]=EXPORT_HEADER;
   for(let i=0;i<allChats.length;i++){
     const r=allChats[i],cat=issueCat[i]||null;
-    out[i+1]=[r.time,r.admin,r.phone??NA,r.email??NA,r.firstJoin??NA,r.lastLeave??NA,r.inSession??NA,r.replyTo,r.chat,cat,cat?1:null,r.file];
+    out[i+1]=[fullTime(r),r.admin,r.phone??NA,r.email??NA,r.firstJoin??NA,r.lastLeave??NA,r.inSession??NA,r.replyTo,r.chat,cat,cat?1:null,r.file];
   }
   return out;
 }
@@ -1690,7 +1785,7 @@ function exportXLSX(){
   if(!allChats.length){alert('No data to export.');return;}
   const wb=XLSX.utils.book_new();
   const wsC=XLSX.utils.aoa_to_sheet(buildExportRows());
-  wsC['!cols']=[{wch:10},{wch:24},{wch:14},{wch:30},{wch:20},{wch:20},{wch:12},{wch:24},{wch:58},{wch:20},{wch:9},{wch:32}];
+  wsC['!cols']=[{wch:20},{wch:24},{wch:14},{wch:30},{wch:20},{wch:20},{wch:12},{wch:24},{wch:58},{wch:20},{wch:9},{wch:32}];
   wsC['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:allChats.length,c:EXPORT_HEADER.length-1}})};
   XLSX.utils.book_append_sheet(wb,wsC,'Total Chat');
   XLSX.writeFile(wb,exportName('xlsx'));
